@@ -15,7 +15,13 @@ dotenv.config();
 const app = express();
 app.use(cors());
 // app.use(express.json());  - causes error
-app.use(authMiddleware);
+
+function asyncMiddleware(fn: any) {
+  return (req: any, res: any, next: any) => {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+}
+app.use(asyncMiddleware(authMiddleware));
 
 const httpServer = http.createServer(app);
 const io = new SocketIOServer(httpServer, {

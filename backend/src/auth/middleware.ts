@@ -1,17 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
+import { prisma } from '../prisma/client';
 
-// For demo: static user map
-const users = [
-  { id: 'user1', name: 'Alice', email: 'alice@example.com' },
-  { id: 'user2', name: 'Bob', email: 'bob@example.com' },
-];
-
-export function authMiddleware(req: Request, res: Response, next: NextFunction) {
+export async function authMiddleware(req: Request, res: Response, next: NextFunction) {
   const token = req.headers['authorization']?.replace('Bearer ', '');
-  // For demo, token is just the user email
-  const user = users.find((u) => u.email === token);
-  if (user) {
-    (req as any).user = user;
+  if (token) {
+    const user = await prisma.user.findUnique({ where: { email: token } });
+    if (user) {
+      (req as any).user = user;
+    }
   }
   next();
 } 
