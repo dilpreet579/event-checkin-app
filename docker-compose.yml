@@ -1,0 +1,15 @@
+services:
+  postgres:
+    container_name: postgres-docker
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: eventuser
+      POSTGRES_PASSWORD: eventpass
+      POSTGRES_DB: eventdb
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  postgres_data: 
