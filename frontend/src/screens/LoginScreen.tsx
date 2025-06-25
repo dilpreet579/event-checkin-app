@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, FlatList, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, FlatList, TouchableOpacity, Platform, Image } from 'react-native';
 import { useAuthStore } from '../store/authStore';
+import { Ionicons } from '@expo/vector-icons';
 
 const users = [
   { id: 'user1', name: 'Alice', email: 'alice@example.com' },
@@ -15,6 +16,7 @@ const users = [
 export default function LoginScreen({ navigation }: any) {
   const [email, setEmail] = useState('alice@example.com');
   const [error, setError] = useState('');
+  const [inputFocused, setInputFocused] = useState(false);
   const login = useAuthStore((s) => s.login);
 
   const handleLogin = () => {
@@ -32,24 +34,30 @@ export default function LoginScreen({ navigation }: any) {
       <View style={styles.card}>
         <Text style={styles.title}>Login</Text>
         <TextInput
-          style={styles.input}
+          style={[styles.input, inputFocused && styles.inputFocused]}
           value={email}
           onChangeText={setEmail}
           placeholder="Email"
           autoCapitalize="none"
+          onFocus={() => setInputFocused(true)}
+          onBlur={() => setInputFocused(false)}
         />
         {error ? <Text style={styles.error}>{error}</Text> : null}
-        <Button title="Login" onPress={handleLogin} />
+        <TouchableOpacity style={styles.loginButton} onPress={handleLogin} activeOpacity={0.85}>
+          <Text style={styles.loginButtonText}>Login</Text>
+        </TouchableOpacity>
         <Text style={styles.hint}>Or tap a user below to autofill:</Text>
         <FlatList
           data={users}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <TouchableOpacity
-              style={styles.userButton}
+              style={[styles.userButton, email === item.email && styles.userButtonSelected]}
               onPress={() => setEmail(item.email)}
+              activeOpacity={0.85}
             >
-              <Text>{item.name} ({item.email})</Text>
+              <Ionicons name="person-circle" size={22} color={email === item.email ? '#2e86de' : '#888'} style={{ marginRight: 8 }} />
+              <Text style={[styles.userButtonText, email === item.email && styles.userButtonTextSelected]}>{item.name} ({item.email})</Text>
             </TouchableOpacity>
           )}
         />
@@ -69,18 +77,68 @@ const styles = StyleSheet.create({
     width: '90%',
     maxWidth: 400,
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 24,
+    borderRadius: 16,
+    padding: 28,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: Platform.OS === 'android' ? 4 : 0,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.13,
+    shadowRadius: 12,
+    elevation: Platform.OS === 'android' ? 8 : 0,
     alignItems: 'center',
   },
-  title: { fontSize: 24, marginBottom: 16 },
-  input: { width: '100%', borderWidth: 1, borderColor: '#ccc', borderRadius: 4, padding: 8, marginBottom: 12 },
+  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 18, },
+  input: {
+    width: '100%',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 12,
+    fontSize: 16,
+    backgroundColor: '#fafbff',
+  },
+  inputFocused: {
+    borderColor: '#2e86de',
+    backgroundColor: '#f0f6ff',
+  },
   error: { color: 'red', marginBottom: 8 },
-  hint: { marginTop: 16, color: '#888' },
-  userButton: { padding: 8, marginVertical: 4, backgroundColor: '#f0f0f0', borderRadius: 4, width: '100%' },
+  loginButton: {
+    backgroundColor: '#2e86de',
+    borderRadius: 6,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    marginBottom: 10,
+    marginTop: 4,
+    width: '100%',
+    alignItems: 'center',
+  },
+  loginButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 15,
+    letterSpacing: 0.5,
+  },
+  hint: { marginTop: 16, color: '#888', marginBottom: 8 },
+  userButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    marginVertical: 4,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 6,
+    width: '100%',
+  },
+  userButtonSelected: {
+    backgroundColor: '#eaf3fb',
+    borderColor: '#2e86de',
+    borderWidth: 1,
+  },
+  userButtonText: {
+    fontSize: 15,
+    color: '#333',
+  },
+  userButtonTextSelected: {
+    color: '#2e86de',
+    fontWeight: 'bold',
+  },
 }); 
