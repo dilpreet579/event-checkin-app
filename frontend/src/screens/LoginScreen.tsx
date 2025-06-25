@@ -32,7 +32,8 @@ export default function LoginScreen({ navigation }: any) {
   return (
     <View style={styles.outerContainer}>
       <View style={styles.card}>
-        <Text style={styles.title}>Login</Text>
+        <Ionicons name="calendar" size={43} color="#000" style={styles.logo} />
+        <Text style={styles.title}>Event Check-In</Text>
         <TextInput
           style={[styles.input, inputFocused && styles.inputFocused]}
           value={email}
@@ -86,7 +87,10 @@ const styles = StyleSheet.create({
     elevation: Platform.OS === 'android' ? 8 : 0,
     alignItems: 'center',
   },
-  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 18, },
+  logo: {
+    marginBottom: 8,
+  },
+  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 18, color: '#000' },
   input: {
     width: '100%',
     borderWidth: 1,
