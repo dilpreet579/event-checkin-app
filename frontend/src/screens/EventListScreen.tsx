@@ -3,6 +3,7 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, Button, Platform } 
 import { useQuery, gql } from '@apollo/client';
 import { useAuthStore } from '../store/authStore';
 import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const EVENTS_QUERY = gql`
   query Events {
@@ -31,12 +32,13 @@ export default function EventListScreen({ navigation }: any) {
   if (error) return <Text>Error: {error.message}</Text>;
 
   return (
-    <View style={styles.outerContainer}>
+    <LinearGradient colors={["#f6f6f6", "#e3eafc"]} style={styles.outerContainer}>
       <View style={styles.card}>
         <View style={styles.header}>
           <Text style={styles.title}>Events List</Text>
           <Button title="Logout" onPress={handleLogout} color="#e74c3c" />
         </View>
+        {user && <Text style={styles.welcome}>Welcome, <Text style={styles.welcomeName}>{user.name}</Text>!</Text>}
         <FlatList
           data={data.events}
           keyExtractor={(item) => item.id}
@@ -47,7 +49,7 @@ export default function EventListScreen({ navigation }: any) {
               <TouchableOpacity
                 style={styles.eventCard}
                 onPress={() => navigation.navigate('EventDetail', { eventId: item.id })}
-                activeOpacity={0.85}
+                activeOpacity={0.92}
               >
                 <View style={styles.eventHeaderRow}>
                   <Text style={styles.eventName}>{item.name}</Text>
@@ -80,7 +82,7 @@ export default function EventListScreen({ navigation }: any) {
           contentContainerStyle={{ paddingBottom: 16 }}
         />
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -89,24 +91,25 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f6f6f6',
     padding: 23,
   },
   card: {
     width: '100%',
     maxWidth: 1100,
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 20,
+    borderRadius: 16,
+    padding: 28,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: Platform.OS === 'android' ? 4 : 0,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.13,
+    shadowRadius: 12,
+    elevation: Platform.OS === 'android' ? 8 : 0,
     flex: 1,
   },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  title: { fontSize: 24, textAlign: 'center' },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 },
+  title: { fontSize: 30, fontWeight: 'bold', textAlign: 'center', color: '#4682A9', letterSpacing: 0.5 },
+  welcome: { fontSize: 17, color: '#333', marginBottom: 10, marginLeft: 2 },
+  welcomeName: { color: '#4682A9', fontWeight: 'bold' },
   eventCard: {
     backgroundColor: '#fafbff',
     borderRadius: 10,
