@@ -19,7 +19,7 @@ export default function App() {
           <Stack.Navigator initialRouteName="Login">
             <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Events" component={EventListScreen} options={{ headerShown: false }} />
-            <Stack.Screen name="EventDetail" component={EventDetailScreen} />
+            <Stack.Screen name="EventDetail" component={EventDetailScreen} options={{ headerShown: false }} />
           </Stack.Navigator>
         </NavigationContainer>
       </QueryClientProvider>

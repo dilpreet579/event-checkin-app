@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Button, Platform } from 'react-native';
 import { useQuery, gql } from '@apollo/client';
 import { useAuthStore } from '../store/authStore';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 
 const EVENTS_QUERY = gql`
   query Events {
@@ -11,6 +12,7 @@ const EVENTS_QUERY = gql`
       location
       startTime
       participantCount
+      attendees { id }
     }
   }
 `;
@@ -18,6 +20,7 @@ const EVENTS_QUERY = gql`
 export default function EventListScreen({ navigation }: any) {
   const { data, loading, error } = useQuery(EVENTS_QUERY);
   const logout = useAuthStore((s) => s.logout);
+  const user = useAuthStore((s) => s.user);
 
   const handleLogout = () => {
     logout();
@@ -37,21 +40,43 @@ export default function EventListScreen({ navigation }: any) {
         <FlatList
           data={data.events}
           keyExtractor={(item) => item.id}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.event}
-              onPress={() => navigation.navigate('EventDetail', { eventId: item.id })}
-            >
-              <Text style={styles.eventName}>{item.name}</Text>
-              <Text>{item.location}</Text>
-              <Text>
-                {item.startTime && !isNaN(new Date(item.startTime).getTime())
-                  ? new Date(item.startTime).toLocaleString()
-                  : 'No date'}
-              </Text>
-              <Text>Participants: {item.participantCount}</Text>
-            </TouchableOpacity>
-          )}
+          ListEmptyComponent={<Text style={styles.empty}>No events found.</Text>}
+          renderItem={({ item }) => {
+            const isJoined = user && item.attendees.some((a: any) => a.id === user.id);
+            return (
+              <TouchableOpacity
+                style={styles.eventCard}
+                onPress={() => navigation.navigate('EventDetail', { eventId: item.id })}
+                activeOpacity={0.85}
+              >
+                <View style={styles.eventHeaderRow}>
+                  <Text style={styles.eventName}>{item.name}</Text>
+                  {isJoined && (
+                    <View style={styles.joinedBadge}>
+                      <Ionicons name="checkmark-circle" size={16} color="#2ecc71" />
+                      <Text style={styles.joinedText}>Joined</Text>
+                    </View>
+                  )}
+                </View>
+                <View style={styles.eventInfoRow}>
+                  <Ionicons name="location-outline" size={18} color="#888" style={styles.icon} />
+                  <Text style={styles.eventInfo}>{item.location}</Text>
+                </View>
+                <View style={styles.eventInfoRow}>
+                  <MaterialIcons name="schedule" size={18} color="#888" style={styles.icon} />
+                  <Text style={styles.eventInfo}>
+                    {item.startTime && !isNaN(new Date(item.startTime).getTime())
+                      ? new Date(item.startTime).toLocaleString()
+                      : 'No date'}
+                  </Text>
+                </View>
+                <View style={styles.eventInfoRow}>
+                  <Ionicons name="people-outline" size={18} color="#888" style={styles.icon} />
+                  <Text style={styles.eventInfo}>Participants: {item.participantCount}</Text>
+                </View>
+              </TouchableOpacity>
+            );
+          }}
           contentContainerStyle={{ paddingBottom: 16 }}
         />
       </View>
@@ -61,11 +86,11 @@ export default function EventListScreen({ navigation }: any) {
 
 const styles = StyleSheet.create({
   outerContainer: {
-    padding: 23,
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f6f6f6',
+    padding: 23,
   },
   card: {
     width: '100%',
@@ -82,6 +107,23 @@ const styles = StyleSheet.create({
   },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
   title: { fontSize: 24, textAlign: 'center' },
-  event: { padding: 16, borderWidth: 1, borderColor: '#eee', borderRadius: 8, marginBottom: 12 },
-  eventName: { fontSize: 18, fontWeight: 'bold' },
+  eventCard: {
+    backgroundColor: '#fafbff',
+    borderRadius: 10,
+    padding: 18,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: Platform.OS === 'android' ? 2 : 0,
+  },
+  eventHeaderRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
+  eventName: { fontSize: 20, fontWeight: 'bold' },
+  joinedBadge: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#eafaf1', borderRadius: 8, paddingHorizontal: 8, paddingVertical: 2, marginLeft: 8 },
+  joinedText: { color: '#2ecc71', fontWeight: 'bold', marginLeft: 4, fontSize: 13 },
+  eventInfoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
+  eventInfo: { fontSize: 15, color: '#555' },
+  icon: { marginRight: 6 },
+  empty: { textAlign: 'center', color: '#aaa', marginVertical: 16 },
 }); 
