@@ -32,7 +32,7 @@ export default function LoginScreen({ navigation }: any) {
   return (
     <View style={styles.outerContainer}>
       <View style={styles.card}>
-        <Ionicons name="calendar" size={43} color="#000" style={styles.logo} />
+        <Ionicons name="calendar" size={43} color="#0D5EA6" style={styles.logo} />
         <Text style={styles.title}>Event Check-In</Text>
         <TextInput
           style={[styles.input, inputFocused && styles.inputFocused]}
@@ -57,7 +57,7 @@ export default function LoginScreen({ navigation }: any) {
               onPress={() => setEmail(item.email)}
               activeOpacity={0.85}
             >
-              <Ionicons name="person-circle" size={22} color={email === item.email ? '#2e86de' : '#888'} style={{ marginRight: 8 }} />
+              <Ionicons name="person-circle" size={22} color={email === item.email ? '#0D5EA6' : '#888'} style={{ marginRight: 8 }} />
               <Text style={[styles.userButtonText, email === item.email && styles.userButtonTextSelected]}>{item.name} ({item.email})</Text>
             </TouchableOpacity>
           )}
@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f6f6f6',
+    padding: 23,
   },
   card: {
     width: '90%',
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
   logo: {
     marginBottom: 8,
   },
-  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 18, color: '#000' },
+  title: { fontSize: 28, fontWeight: 'bold', marginBottom: 18, color: '#0D5EA6' },
   input: {
     width: '100%',
     borderWidth: 1,
@@ -102,12 +103,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#fafbff',
   },
   inputFocused: {
-    borderColor: '#2e86de',
+    borderColor: '#0D5EA6',
     backgroundColor: '#f0f6ff',
   },
   error: { color: 'red', marginBottom: 8 },
   loginButton: {
-    backgroundColor: '#2e86de',
+    backgroundColor: '#0D5EA6',
     borderRadius: 6,
     paddingVertical: 12,
     paddingHorizontal: 32,
@@ -134,7 +135,7 @@ const styles = StyleSheet.create({
   },
   userButtonSelected: {
     backgroundColor: '#eaf3fb',
-    borderColor: '#2e86de',
+    borderColor: '#0D5EA6',
     borderWidth: 1,
   },
   userButtonText: {
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   userButtonTextSelected: {
-    color: '#2e86de',
+    color: '#0D5EA6',
     fontWeight: 'bold',
   },
 }); 

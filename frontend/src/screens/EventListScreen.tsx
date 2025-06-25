@@ -91,6 +91,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#f6f6f6',
     padding: 23,
   },
   card: {
@@ -107,11 +108,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 },
-  title: { fontSize: 30, fontWeight: 'bold', textAlign: 'center', color: '#4682A9', letterSpacing: 0.5 },
+  title: { fontSize: 30, fontWeight: 'bold', textAlign: 'center', color: '#0D5EA6', letterSpacing: 0.5 },
   welcome: { fontSize: 17, color: '#333', marginBottom: 10, marginLeft: 2 },
-  welcomeName: { color: '#4682A9', fontWeight: 'bold' },
+  welcomeName: { color: '#0D5EA6', fontWeight: 'bold' },
   eventCard: {
-    backgroundColor: '#fafbff',
+    backgroundColor: '#EFF1FB',
     borderRadius: 10,
     padding: 18,
     marginBottom: 16,
