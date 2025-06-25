@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Button } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Button, Platform } from 'react-native';
 import { useQuery, gql } from '@apollo/client';
 import { useAuthStore } from '../store/authStore';
 
@@ -28,36 +28,58 @@ export default function EventListScreen({ navigation }: any) {
   if (error) return <Text>Error: {error.message}</Text>;
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Events List</Text>
-        <Button title="Logout" onPress={handleLogout} color="#e74c3c" />
+    <View style={styles.outerContainer}>
+      <View style={styles.card}>
+        <View style={styles.header}>
+          <Text style={styles.title}>Events List</Text>
+          <Button title="Logout" onPress={handleLogout} color="#e74c3c" />
+        </View>
+        <FlatList
+          data={data.events}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.event}
+              onPress={() => navigation.navigate('EventDetail', { eventId: item.id })}
+            >
+              <Text style={styles.eventName}>{item.name}</Text>
+              <Text>{item.location}</Text>
+              <Text>
+                {item.startTime && !isNaN(new Date(item.startTime).getTime())
+                  ? new Date(item.startTime).toLocaleString()
+                  : 'No date'}
+              </Text>
+              <Text>Participants: {item.participantCount}</Text>
+            </TouchableOpacity>
+          )}
+          contentContainerStyle={{ paddingBottom: 16 }}
+        />
       </View>
-      <FlatList
-        data={data.events}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.event}
-            onPress={() => navigation.navigate('EventDetail', { eventId: item.id })}
-          >
-            <Text style={styles.eventName}>{item.name}</Text>
-            <Text>{item.location}</Text>
-            <Text>
-              {item.startTime && !isNaN(new Date(item.startTime).getTime())
-                ? new Date(item.startTime).toLocaleString()
-                : 'No date'}
-            </Text>
-            <Text>Participants: {item.participantCount}</Text>
-          </TouchableOpacity>
-        )}
-      />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
+  outerContainer: {
+    padding: 23,
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f6f6f6',
+  },
+  card: {
+    width: '100%',
+    maxWidth: 1100,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: Platform.OS === 'android' ? 4 : 0,
+    flex: 1,
+  },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
   title: { fontSize: 24, textAlign: 'center' },
   event: { padding: 16, borderWidth: 1, borderColor: '#eee', borderRadius: 8, marginBottom: 12 },
