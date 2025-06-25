@@ -29,6 +29,10 @@ A full-stack real-time event engagement platform where users can browse upcoming
 - [Docker](https://www.docker.com/) (for PostgreSQL)
 - [Expo CLI](https://docs.expo.dev/get-started/installation/) (`npm install -g expo-cli`)
 
+> **⚠️ WARNING:**
+> Make sure port **5432** (the default PostgreSQL port) is free before running `docker compose up -d`.
+> If you have another PostgreSQL instance or service using this port, stop it or change the port in `docker-compose.yml`.
+
 ### 1. Clone the Repository
 ```sh
 git clone https://github.com/dilpreet579/event-checkin-app.git
