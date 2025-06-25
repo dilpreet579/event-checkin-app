@@ -17,8 +17,8 @@ export default function App() {
       <QueryClientProvider client={queryClient}>
         <NavigationContainer>
           <Stack.Navigator initialRouteName="Login">
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Events" component={EventListScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Events" component={EventListScreen} options={{ headerShown: false }} />
             <Stack.Screen name="EventDetail" component={EventDetailScreen} />
           </Stack.Navigator>
         </NavigationContainer>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, FlatList, TouchableOpacity, Platform } from 'react-native';
 import { useAuthStore } from '../store/authStore';
 
 const users = [
@@ -8,6 +8,8 @@ const users = [
   { id: 'user3', name: 'Charlie', email: 'charlie@example.com' },
   { id: 'user4', name: 'Diana', email: 'diana@example.com' },
   { id: 'user5', name: 'Eve', email: 'eve@example.com' },
+  { id: 'user6', name: 'Frank', email: 'frank@example.com' },
+  { id: 'user7', name: 'Grace', email: 'grace@example.com' },
 ];
 
 export default function LoginScreen({ navigation }: any) {
@@ -26,36 +28,56 @@ export default function LoginScreen({ navigation }: any) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <TextInput
-        style={styles.input}
-        value={email}
-        onChangeText={setEmail}
-        placeholder="Email"
-        autoCapitalize="none"
-      />
-      {error ? <Text style={styles.error}>{error}</Text> : null}
-      <Button title="Login" onPress={handleLogin} />
-      <Text style={styles.hint}>Or tap a user below to autofill:</Text>
-      <FlatList
-        data={users}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.userButton}
-            onPress={() => setEmail(item.email)}
-          >
-            <Text>{item.name} ({item.email})</Text>
-          </TouchableOpacity>
-        )}
-      />
+    <View style={styles.outerContainer}>
+      <View style={styles.card}>
+        <Text style={styles.title}>Login</Text>
+        <TextInput
+          style={styles.input}
+          value={email}
+          onChangeText={setEmail}
+          placeholder="Email"
+          autoCapitalize="none"
+        />
+        {error ? <Text style={styles.error}>{error}</Text> : null}
+        <Button title="Login" onPress={handleLogin} />
+        <Text style={styles.hint}>Or tap a user below to autofill:</Text>
+        <FlatList
+          data={users}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.userButton}
+              onPress={() => setEmail(item.email)}
+            >
+              <Text>{item.name} ({item.email})</Text>
+            </TouchableOpacity>
+          )}
+        />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
+  outerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f6f6f6',
+  },
+  card: {
+    width: '90%',
+    maxWidth: 400,
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: Platform.OS === 'android' ? 4 : 0,
+    alignItems: 'center',
+  },
   title: { fontSize: 24, marginBottom: 16 },
   input: { width: '100%', borderWidth: 1, borderColor: '#ccc', borderRadius: 4, padding: 8, marginBottom: 12 },
   error: { color: 'red', marginBottom: 8 },
