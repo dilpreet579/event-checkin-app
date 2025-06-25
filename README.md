@@ -31,7 +31,7 @@ A full-stack real-time event engagement platform where users can browse upcoming
 
 > **⚠️ WARNING:**
 > Make sure port **5432** (the default PostgreSQL port) is free before running `docker compose up -d`.
-> If you have another PostgreSQL instance or service using this port, stop it or change the port in `docker-compose.yml`.
+> If you have another PostgreSQL instance or service using this port, stop it or change the port in `docker-compose.yml` and in the `.env` file.
 
 ### 1. Clone the Repository
 ```sh
