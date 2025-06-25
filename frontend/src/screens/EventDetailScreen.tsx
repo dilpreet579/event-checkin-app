@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, Button, FlatList, StyleSheet, Platform, TouchableOpacity, Animated } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, Button, FlatList, StyleSheet, Platform, TouchableOpacity, Animated, ScrollView } from 'react-native';
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { useAuthStore } from '../store/authStore';
 import { useSocketStore } from '../store/socketStore';
@@ -58,6 +58,7 @@ export default function EventDetailScreen({ route, navigation }: any) {
   const [participantCount, setParticipantCount] = useState(0);
   const [eventDetails, setEventDetails] = useState<any>(null);
   const [buttonAnim] = React.useState(new Animated.Value(1));
+  const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     connect();
@@ -85,6 +86,10 @@ export default function EventDetailScreen({ route, navigation }: any) {
       setEventDetails(data.event);
     }
   }, [data, eventId]);
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, { toValue: 1, duration: 400, useNativeDriver: true }).start();
+  }, [attendees]);
 
   const isJoined = attendees.some((a) => a.id === user?.id);
 
@@ -132,20 +137,22 @@ export default function EventDetailScreen({ route, navigation }: any) {
         {/* Divider */}
         <View style={styles.divider} />
         <Text style={styles.title}>Attendees ({participantCount})</Text>
-        <FlatList
-          data={attendees}
-          keyExtractor={(item) => item.id}
-          ListEmptyComponent={<Text style={styles.empty}>No attendees yet. Be the first to join!</Text>}
-          renderItem={({ item }) => (
-            <View style={styles.attendee}>
-              <View style={[styles.avatar, { backgroundColor: getAvatarColor(item.name) }] }>
-                <Text style={styles.avatarText}>{item.name[0]}</Text>
+        <Animated.View style={{ opacity: fadeAnim }}>
+          <FlatList
+            data={attendees}
+            keyExtractor={(item) => item.id}
+            ListEmptyComponent={<Text style={styles.empty}>No attendees yet. Be the first to join!</Text>}
+            renderItem={({ item }) => (
+              <View style={styles.attendee}>
+                <View style={[styles.avatar, { backgroundColor: getAvatarColor(item.name) }] }>
+                  <Text style={styles.avatarText}>{item.name[0]}</Text>
+                </View>
+                <Text style={styles.attendeeName}>{item.name}</Text>
               </View>
-              <Text style={styles.attendeeName}>{item.name}</Text>
-            </View>
-          )}
-          contentContainerStyle={{ paddingBottom: 16 }}
-        />
+            )}
+            contentContainerStyle={{ paddingBottom: 16 }}
+          />
+        </Animated.View>
         <Animated.View style={{ transform: [{ scale: buttonAnim }], marginTop: 8 }}>
           {isJoined ? (
             <TouchableOpacity style={[styles.actionButton, styles.leaveButton]} onPress={() => { animateButton(); handleLeave(); }} activeOpacity={0.85}>
@@ -183,6 +190,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.13,
     shadowRadius: 12,
+    borderWidth: 1,
+    borderColor: '#e3eafc',
     elevation: Platform.OS === 'android' ? 8 : 0,
     flex: 1,
   },
