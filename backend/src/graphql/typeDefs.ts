@@ -1,6 +1,8 @@
 import { gql } from 'apollo-server-express';
 
 export const typeDefs = gql`
+  scalar DateTime
+  
   type User {
     id: ID!
     name: String!
@@ -11,7 +13,7 @@ export const typeDefs = gql`
     id: ID!
     name: String!
     location: String!
-    startTime: String!
+    startTime: DateTime!
     attendees: [User!]!
     participantCount: Int!
   }
