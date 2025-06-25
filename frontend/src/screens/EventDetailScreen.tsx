@@ -5,8 +5,8 @@ import { useAuthStore } from '../store/authStore';
 import { useSocketStore } from '../store/socketStore';
 
 const EVENT_QUERY = gql`
-  query Event($eventId: ID!) {
-    events {
+  query Event($id: ID!) {
+    event(id: $id) {
       id
       name
       location
@@ -41,7 +41,7 @@ export default function EventDetailScreen({ route }: any) {
   const { eventId } = route.params;
   const { user } = useAuthStore();
   const { socket, connect } = useSocketStore();
-  const { data, refetch } = useQuery(EVENT_QUERY);
+  const { data, refetch } = useQuery(EVENT_QUERY, { variables: { id: eventId } });
   const [joinEvent] = useMutation(JOIN_EVENT);
   const [leaveEvent] = useMutation(LEAVE_EVENT);
   const [attendees, setAttendees] = useState<any[]>([]);
@@ -67,10 +67,9 @@ export default function EventDetailScreen({ route }: any) {
   }, [socket, eventId]);
 
   useEffect(() => {
-    if (data) {
-      const event = data.events.find((e: any) => e.id === eventId);
-      setAttendees(event.attendees);
-      setParticipantCount(event.participantCount);
+    if (data && data.event) {
+      setAttendees(data.event.attendees);
+      setParticipantCount(data.event.participantCount);
     }
   }, [data, eventId]);
 

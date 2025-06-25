@@ -18,6 +18,7 @@ export const typeDefs = gql`
 
   type Query {
     events: [Event!]!
+    event(id: ID!): Event
     me: User
   }
 

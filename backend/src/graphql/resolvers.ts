@@ -10,6 +10,14 @@ export const resolvers = {
       return events.map((e: any) => ({ ...e, participantCount: e.attendees.length }));
     },
     me: (_: any, __: any, ctx: any) => ctx.req.user || null,
+    event: async (_: any, { id }: any) => {
+      const event = await prisma.event.findUnique({
+        where: { id },
+        include: { attendees: true },
+      });
+      if (!event) return null;
+      return { ...event, participantCount: event.attendees.length };
+    },
   },
   Event: {
     attendees: (parent: any) => parent.attendees,
