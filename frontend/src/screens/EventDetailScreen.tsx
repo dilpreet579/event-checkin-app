@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, FlatList, StyleSheet, Platform, TouchableOpacity } from 'react-native';
+import { View, Text, Button, FlatList, StyleSheet, Platform, TouchableOpacity, Animated } from 'react-native';
 import { useQuery, useMutation, gql } from '@apollo/client';
 import { useAuthStore } from '../store/authStore';
 import { useSocketStore } from '../store/socketStore';
-import { Ionicons } from '@expo/vector-icons';
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const EVENT_QUERY = gql`
   query Event($id: ID!) {
@@ -56,6 +57,7 @@ export default function EventDetailScreen({ route, navigation }: any) {
   const [attendees, setAttendees] = useState<any[]>([]);
   const [participantCount, setParticipantCount] = useState(0);
   const [eventDetails, setEventDetails] = useState<any>(null);
+  const [buttonAnim] = React.useState(new Animated.Value(1));
 
   useEffect(() => {
     connect();
@@ -95,24 +97,36 @@ export default function EventDetailScreen({ route, navigation }: any) {
     refetch();
   };
 
+  const animateButton = () => {
+    Animated.sequence([
+      Animated.timing(buttonAnim, { toValue: 0.95, duration: 80, useNativeDriver: true }),
+      Animated.timing(buttonAnim, { toValue: 1, duration: 80, useNativeDriver: true }),
+    ]).start();
+  };
+
   return (
-    <View style={styles.outerContainer}>
+    <LinearGradient colors={["#f6f6f6", "#e3eafc"]} style={styles.outerContainer}>
       <View style={styles.card}>
         {/* Back Button */}
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={24} color="#333" />
-          {/* <Text style={styles.backText}>Back</Text> */}
         </TouchableOpacity>
         {/* Event Details */}
         {eventDetails && (
           <View style={styles.eventDetails}>
             <Text style={styles.eventName}>{eventDetails.name}</Text>
-            <Text style={styles.eventLocation}>{eventDetails.location}</Text>
-            <Text style={styles.eventTime}>
-              {eventDetails.startTime && !isNaN(new Date(eventDetails.startTime).getTime())
-                ? new Date(eventDetails.startTime).toLocaleString()
-                : 'No date'}
-            </Text>
+            <View style={styles.eventInfoRow}>
+              <Ionicons name="location-outline" size={18} color="#888" style={styles.icon} />
+              <Text style={styles.eventLocation}>{eventDetails.location}</Text>
+            </View>
+            <View style={styles.eventInfoRow}>
+              <MaterialIcons name="schedule" size={18} color="#888" style={styles.icon} />
+              <Text style={styles.eventTime}>
+                {eventDetails.startTime && !isNaN(new Date(eventDetails.startTime).getTime())
+                  ? new Date(eventDetails.startTime).toLocaleString()
+                  : 'No date'}
+              </Text>
+            </View>
           </View>
         )}
         {/* Divider */}
@@ -132,13 +146,22 @@ export default function EventDetailScreen({ route, navigation }: any) {
           )}
           contentContainerStyle={{ paddingBottom: 16 }}
         />
-        {isJoined ? (
-          <Button title="Leave Event" onPress={handleLeave} color="#e74c3c" />
-        ) : (
-          <Button title="Join Event" onPress={handleJoin} color="#2ecc71" />
-        )}
+        <Animated.View style={{ transform: [{ scale: buttonAnim }], marginTop: 8 }}>
+          {isJoined ? (
+            <TouchableOpacity style={[styles.actionButton, styles.leaveButton]} onPress={() => { animateButton(); handleLeave(); }} activeOpacity={0.85}>
+              <Ionicons name="exit-outline" size={18} color="#fff" style={{ marginRight: 6 }} />
+              <Text style={styles.actionButtonText}>Leave Event</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={[styles.actionButton, styles.joinButton]} onPress={() => { animateButton(); handleJoin(); }} activeOpacity={0.85}>
+              <Ionicons name="log-in-outline" size={18} color="#fff" style={{ marginRight: 6 }} />
+              <Text style={styles.actionButtonText}>Join Event</Text>
+            </TouchableOpacity>
+          )}
+        </Animated.View>
+        {!isJoined && <Text style={styles.notJoined}>Join to see yourself in the attendee list!</Text>}
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
@@ -154,34 +177,59 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: 1100,
     backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 20,
+    borderRadius: 16,
+    padding: 28,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: Platform.OS === 'android' ? 4 : 0,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.13,
+    shadowRadius: 12,
+    elevation: Platform.OS === 'android' ? 8 : 0,
     flex: 1,
   },
-  eventDetails: { marginBottom: 16, alignItems: 'center' },
-  eventName: { fontSize: 22, fontWeight: 'bold', marginBottom: 4 },
-  eventLocation: { fontSize: 16, color: '#555', marginBottom: 2 },
-  eventTime: { fontSize: 14, color: '#888', marginBottom: 8 },
-  divider: { height: 1, backgroundColor: '#eee', marginVertical: 12, width: '100%' },
-  title: { fontSize: 20, marginBottom: 12, textAlign: 'center' },
-  attendee: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-  avatar: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
-  avatarText: { color: '#fff', fontWeight: 'bold', fontSize: 20 },
-  attendeeName: { fontSize: 16 },
-  empty: { textAlign: 'center', color: '#aaa', marginVertical: 16 },
   backButton: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 8,
   },
-  backText: {
-    marginLeft: 4,
-    fontSize: 18,
-    color: '#333',
+  eventDetails: { marginBottom: 16, alignItems: 'center' },
+  eventName: { fontSize: 26, fontWeight: 'bold', marginBottom: 8, color: '#4682A9', textAlign: 'center' },
+  eventInfoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 4 },
+  eventLocation: { fontSize: 16, color: '#555', marginBottom: 2 },
+  eventTime: { fontSize: 14, color: '#888', marginBottom: 8 },
+  icon: { marginRight: 6 },
+  divider: { height: 1, backgroundColor: '#eee', marginVertical: 12, width: '100%' },
+  title: { fontSize: 20, marginBottom: 12, textAlign: 'center', color: '#4682A9', fontWeight: 'bold' },
+  attendee: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+  avatar: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
+  avatarText: { color: '#fff', fontWeight: 'bold', fontSize: 20 },
+  attendeeName: { fontSize: 16 },
+  empty: { textAlign: 'center', color: '#aaa', marginVertical: 16 },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    marginBottom: 8,
+    width: '100%',
+  },
+  joinButton: {
+    backgroundColor: '#2ecc71',
+  },
+  leaveButton: {
+    backgroundColor: '#e74c3c',
+  },
+  actionButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+    letterSpacing: 0.5,
+  },
+  notJoined: {
+    color: '#888',
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 4,
   },
 }); 
