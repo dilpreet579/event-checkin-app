@@ -31,8 +31,8 @@ A full-stack real-time event engagement platform where users can browse upcoming
 
 ### 1. Clone the Repository
 ```sh
-git clone <your-repo-url>
-cd Real-Time-Event-Check-In-App
+git clone https://github.com/dilpreet579/event-checkin-app.git
+cd event-checkin-app
 ```
 
 ### 2. Start the Database
